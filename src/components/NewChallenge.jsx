@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useAnimate, stagger } from 'framer-motion';
 //store
 import { ChallengesContext } from '../store/challenges-context.jsx';
 //components
@@ -13,6 +13,8 @@ export default function NewChallenge({ onDone }) {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const { addChallenge } = useContext(ChallengesContext);
+
+  const [scope, animate] = useAnimate();
 
   function handleSelectImage(image) {
     setSelectedImage(image);
@@ -33,6 +35,11 @@ export default function NewChallenge({ onDone }) {
       !challenge.deadline.trim() ||
       !challenge.image
     ) {
+      animate(
+        'input,textarea',
+        { x: [-10, 0, 10, 0] },
+        { type: 'spring', duration: 0.2, delay: stagger(0.5) }
+      );
       return;
     }
 
@@ -42,7 +49,7 @@ export default function NewChallenge({ onDone }) {
 
   return (
     <Modal title="New Challenge" onClose={onDone}>
-      <form id="new-challenge" onSubmit={handleSubmit}>
+      <form id="new-challenge" onSubmit={handleSubmit} ref={scope}>
         <p>
           <label htmlFor="title">Title</label>
           <input ref={title} type="text" name="title" id="title" />
